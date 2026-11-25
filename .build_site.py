@@ -102,7 +102,7 @@ def page(title, desc, body, path, extra_head=""):
 <style>{CSS}</style></head><body>
 <header><a class="logo" href="/">Hemen<b>Oyna</b></a>
 <form class="s" action="/ara/"><input name="q" placeholder="Oyun ara…" aria-label="Oyun ara"></form></header>
-<nav class="c"><a href="/">🔥 Popüler</a><a href="/turkce/">🇹🇷 Türkçe</a>{menu}</nav>
+<nav class="c"><a href="/">🔥 Popüler</a><a href="/turkce/">🇹🇷 Türkçe</a>{menu}<a href="/en/">🌍 English</a></nav>
 <main>{body}</main>
 <footer>{SITE} · İndirme yok, kayıt yok — tarayıcıda ücretsiz oyna · <a href="/gizlilik/">Gizlilik</a><br>Oyunlar Playgama ortaklığıyla sunulur.</footer>
 {GOAT_JS}</body></html>"""
@@ -185,7 +185,7 @@ for i, g in enumerate(G):
             f"<h2>Oyun Hakkında</h2><p class='desc'>{esc((g.get('description') or '')[:1200])}</p>"
             f"<h2>Benzer Oyunlar</h2><div class='grid'>" + "".join(card(o) for o in rel) + "</div>")
     write(f"/oyun/{g['slug']}/", page(f"{g['title']} Oyna — Ücretsiz Online | {SITE}", tr_desc, body, f"/oyun/{g['slug']}/",
-                                      f'<meta property="og:image" content="{esc(g["img"])}"><script type="application/ld+json">{ld}</script>'))
+                                      f'<link rel="alternate" hreflang="tr" href="{BASE}/oyun/{g["slug"]}/"><link rel="alternate" hreflang="en" href="{BASE}/en/game/{g["slug"]}/"><meta property="og:image" content="{esc(g["img"])}"><script type="application/ld+json">{ld}</script>'))
     urls.append(f"/oyun/{g['slug']}/")
 
 # Arama
