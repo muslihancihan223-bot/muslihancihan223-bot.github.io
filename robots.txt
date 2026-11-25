@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://muslihancihan223-bot.github.io/sitemap.xml
