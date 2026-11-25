@@ -85,6 +85,11 @@ footer{text-align:center;color:#8a8db0;font-size:13px;padding:30px 14px}footer a
 GOAT_JS = ('<script data-goatcounter="https://%s.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>' % GOAT)
 
 
+from i18n import LANGS as _LS, HREFLANG as _HL
+def ALT(sl):
+    return "".join(f'<link rel="alternate" hreflang="{_HL.get(l,l)}" href="{BASE}/{l}/game/{sl}/">' for l in _LS)
+
+
 def ad_block():
     k = ADSTERRA_KEY
     return ('<div class="ad"><script>atOptions={"key":"%s","format":"iframe","height":50,"width":320,"params":{}};</script>'
@@ -99,13 +104,13 @@ def page(title, desc, body, path, extra_head=""):
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{canon}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{canon}"><meta name="theme-color" content="#12132b">{extra_head}
-<style>{CSS}</style></head><body>
+<style>{CSS}#langs{{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin:0 auto 14px;max-width:900px}}#langs a{{text-decoration:none;color:#c3c5dc}}</style></head><body>
 <header><a class="logo" href="/">Hemen<b>Oyna</b></a>
 <form class="s" action="/ara/"><input name="q" placeholder="Oyun ara…" aria-label="Oyun ara"></form></header>
-<nav class="c"><a href="/">🔥 Popüler</a><a href="/turkce/">🇹🇷 Türkçe</a>{menu}<a href="/en/">🌍 English</a></nav>
+<nav class="c"><a href="/">🔥 Popüler</a><a href="/turkce/">🇹🇷 Türkçe</a>{menu}<a href="#langs">🌍 Languages</a></nav>
 <main>{body}</main>
-<footer>{SITE} · İndirme yok, kayıt yok — tarayıcıda ücretsiz oyna · <a href="/gizlilik/">Gizlilik</a><br>Oyunlar Playgama ortaklığıyla sunulur.</footer>
-{GOAT_JS}</body></html>"""
+<footer><div id="langs"></div>{SITE} · İndirme yok, kayıt yok — tarayıcıda ücretsiz oyna · <a href="/gizlilik/">Gizlilik</a><br>Oyunlar Playgama ortaklığıyla sunulur.</footer>
+<script src="/assets/langs.js" defer></script>{GOAT_JS}</body></html>"""
 
 
 def card(g):
@@ -185,7 +190,7 @@ for i, g in enumerate(G):
             f"<h2>Oyun Hakkında</h2><p class='desc'>{esc((g.get('description') or '')[:1200])}</p>"
             f"<h2>Benzer Oyunlar</h2><div class='grid'>" + "".join(card(o) for o in rel) + "</div>")
     write(f"/oyun/{g['slug']}/", page(f"{g['title']} Oyna — Ücretsiz Online | {SITE}", tr_desc, body, f"/oyun/{g['slug']}/",
-                                      f'<link rel="alternate" hreflang="tr" href="{BASE}/oyun/{g["slug"]}/"><link rel="alternate" hreflang="en" href="{BASE}/en/game/{g["slug"]}/"><meta property="og:image" content="{esc(g["img"])}"><script type="application/ld+json">{ld}</script>'))
+                                      f'<link rel="alternate" hreflang="tr" href="{BASE}/oyun/{g["slug"]}/">' + ALT(g["slug"]) + f'<link rel="alternate" hreflang="x-default" href="{BASE}/en/game/{g["slug"]}/"><meta property="og:image" content="{esc(g["img"])}"><script type="application/ld+json">{ld}</script>'))
     urls.append(f"/oyun/{g['slug']}/")
 
 # Arama
