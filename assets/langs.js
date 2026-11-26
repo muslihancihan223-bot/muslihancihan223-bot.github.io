@@ -1,5 +1,0 @@
-(function(){var L=["tr", "en", "es", "pt", "de", "fr", "ru", "it", "id", "pl", "zh", "hi", "ja", "ar", "fa"],N={"tr": "Türkçe", "en": "English", "es": "Español", "pt": "Português", "de": "Deutsch", "fr": "Français", "ru": "Русский", "it": "Italiano", "id": "Bahasa Indonesia", "pl": "Polski", "zh": "中文", "hi": "हिन्दी", "ja": "日本語", "ar": "العربية", "fa": "فارسی"},p=location.pathname,m=p.match(/^\/(en|es|pt|de|fr|ru|it|id|pl|zh|hi|ja|ar|fa)\/(game|category)\/([^\/]+)\//),t=p.match(/^\/(oyun|kategori)\/([^\/]+)\//);
-var kind=null,s=null;if(m){kind=m[2];s=m[3]}else if(t){kind=t[1]=='oyun'?'game':'category';s=t[2]}
-var d=document.getElementById('langs');if(!d)return;var h='';L.forEach(function(l){var u;
-if(l=='tr'){u=kind?('/'+(kind=='game'?'oyun':'kategori')+'/'+s+'/'):'/'}else{u='/'+l+'/'+(kind?kind+'/'+s+'/':'')}
-h+='<a href="'+u+'">'+N[l]+'</a>'});d.innerHTML=h})();
