@@ -4,7 +4,7 @@ Kullanım: python3 build_site.py games.json CIKTI_KLASORU
 import json, sys, os, re, html, shutil, datetime
 
 SRC, OUT = sys.argv[1], sys.argv[2]
-BASE = "https://muslihancihan223-bot.github.io"
+BASE = "https://hemen-oyna.com"
 SITE = "HemenOyna"
 ADSTERRA_KEY = "3997af85d4829bbacda7b2484c989903"
 GOAT = "yorunge"
@@ -137,7 +137,7 @@ urls = ["/", "/turkce/"]
 # Ana sayfa
 feat = ("<div class='feat'><img src='/yorunge.png' alt='Yörünge'><div><h2>Yörünge: Neon Orbit</h2>"
         "Tek dokunuşla yön değiştir, kırmızı lazerlerden kaç, altınları topla. Rekorunu kır!"
-        "<br><a class='btn' href='https://muslihancihan223-bot.github.io/yorunge/?src=hemenoyna'>Hemen Oyna ▶</a></div></div>")
+        "<br><a class='btn' href='https://hemen-oyna.com/yorunge/?src=hemenoyna'>Hemen Oyna ▶</a></div></div>")
 body = "<h1>Ücretsiz Online Oyunlar — İndirmeden Hemen Oyna</h1>" + feat
 body += "<h2>🔥 Popüler Oyunlar</h2><div class='grid'>" + "".join(card(g) for g in G[:48]) + "</div>"
 for c in MENU[:6]:

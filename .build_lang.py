@@ -7,7 +7,7 @@ from i18n import LANGS, RTL, NATIVE, HREFLANG, UI, genre_name
 
 SRC, SITE_DIR = sys.argv[1], sys.argv[2]
 ONLY = sys.argv[3].split(",") if len(sys.argv) > 3 else LANGS
-BASE = "https://muslihancihan223-bot.github.io"
+BASE = "https://hemen-oyna.com"
 SITE = "HemenOyna"
 ADSTERRA_KEY = "3997af85d4829bbacda7b2484c989903"
 TODAY = datetime.date.today().isoformat()
