@@ -127,17 +127,18 @@ def write(path, content):
 
 if os.path.isdir(OUT):
     for n in os.listdir(OUT):
-        if n in (".git", "README.md"):
+        if n in (".git", "README.md", "isgal", "isgal.png", "yorunge.png"):  # elle eklenen oyunlar silinmesin
             continue
         p = os.path.join(OUT, n)
         shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
 
-urls = ["/", "/turkce/"]
+urls = ["/", "/turkce/", "/isgal/"]
 
 # Ana sayfa
 feat = ("<div class='feat'><img src='/yorunge.png' alt='Yörünge'><div><h2>Yörünge: Neon Orbit</h2>"
         "Tek dokunuşla yön değiştir, kırmızı lazerlerden kaç, altınları topla. Rekorunu kır!"
         "<br><a class='btn' href='https://muslihancihan223-bot.github.io/yorunge/?src=hemenoyna'>Hemen Oyna ▶</a></div></div>")
+feat += ("<div class='feat'><img src='/isgal.png' alt='İŞGAL strateji oyunu'><div><h2>İŞGAL: Strateji Masa Oyunu</h2>Satranç ve damaya benzeyen yeni bir oyun: rakibin üzerinden atla, pinlerini kendi rengine çevir, kaleleri ele geçir. Arkadaşınla ya da bilgisayara karşı oyna!<br><a class='btn' href='/isgal/?src=hemenoyna'>Hemen Oyna ▶</a></div></div>")
 body = "<h1>Ücretsiz Online Oyunlar — İndirmeden Hemen Oyna</h1>" + feat
 body += "<h2>🔥 Popüler Oyunlar</h2><div class='grid'>" + "".join(card(g) for g in G[:48]) + "</div>"
 for c in MENU[:6]:

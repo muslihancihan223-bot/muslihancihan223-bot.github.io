@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>İŞGAL – Strateji Masa Oyunu | HemenOyna</title>
+<meta name="description" content="İŞGAL: satranç ve damaya benzeyen yeni bir strateji masa oyunu. Rakibin üzerinden atla, pinlerini kendi rengine çevir, kaleleri ele geçir. Arkadaşınla ya da bilgisayara karşı ücretsiz oyna.">
+<meta name="theme-color" content="#101c22"><link rel="canonical" href="https://muslihancihan223-bot.github.io/isgal/"><meta property="og:title" content="İŞGAL – Strateji Masa Oyunu"><meta property="og:description" content="Rakibin üzerinden atla, pinlerini kendi rengine çevir, kaleleri ele geçir. Ücretsiz oyna."><meta property="og:image" content="https://muslihancihan223-bot.github.io/isgal.png"><meta property="og:url" content="https://muslihancihan223-bot.github.io/isgal/"><link rel="icon" href="/isgal.png">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#101c22;color:#e7ecea;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:#b9ce84}
+header{max-width:1240px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #34434a}
+.brand{font-size:28px;letter-spacing:6px;font-weight:900}
+.sub{color:#a7b5bb;font-size:12px;letter-spacing:.5px}
+.top-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{border:1px solid #52665d;border-radius:20px;padding:7px 12px;color:#bdcf98;text-decoration:none;font-size:13px;background:none;cursor:pointer}
+main{max-width:1240px;margin:auto;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px}
+.boardbox{background:#dccbad;padding:12px;border-radius:14px;box-shadow:0 16px 55px #0005;position:relative}
+svg{width:100%;display:block;user-select:none;-webkit-user-select:none}
+aside{display:flex;flex-direction:column;gap:14px}
+.panel{background:#1b2a31;border:1px solid #33454d;border-radius:12px;padding:16px}
+h2{font-size:16px;margin:0 0 10px}
+button,select{font:inherit;border:1px solid #52656a;border-radius:8px;padding:9px 12px;background:#283b43;color:#eef2ec;cursor:pointer;min-height:42px;touch-action:manipulation}
+button:hover{background:#3a525b}
+button.primary{background:#b9ce84;color:#17251c;border:0;font-weight:700}
+button.primary:hover{background:#c9dc96}
+button:disabled{opacity:.4;cursor:default}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}
+.score{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #3c4c53}
+.score.active{color:#d8ebac}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:7px;border:1px solid #a9b4b9;vertical-align:-2px}
+.white{background:#fff}.black{background:#13191c}
+label{display:block;font-size:14px;margin:10px 0}
+label select{margin-left:6px}
+#status{font-size:21px;font-weight:800;margin:4px 0}
+#hint{color:#b9c8ce;line-height:1.5;font-size:14px;min-height:42px}
+#history{max-height:170px;overflow:auto;font-size:13px;line-height:1.9}
+summary{cursor:pointer;font-weight:700;min-height:30px;display:flex;align-items:center}
+details p,details li{font-size:13.5px;color:#c0ccd1;line-height:1.6}
+.muted{color:#a7b5bb;font-size:13px}
+.node{cursor:pointer;touch-action:manipulation}
+.node:focus{outline:none}
+.node:focus-visible circle.pin{filter:brightness(1.3)}
+.pin{transition:fill .25s}
+.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.flip{animation:flip .45s ease-in-out}
+@keyframes flip{0%{transform:scaleX(1)}50%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+.pulse{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.thinking{position:absolute;right:20px;top:20px;background:#1b2a31e6;color:#e7ecea;padding:7px 12px;border-radius:20px;font-size:13px;display:none}
+.boardtools{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
+.overlay.show{display:flex}
+.modal{background:#1b2a31;border:2px solid #b9ce84;border-radius:16px;max-width:520px;width:100%;padding:22px;max-height:92vh;overflow:auto}
+.modal h3{margin:0 0 8px;font-size:22px}
+.modal p{line-height:1.6;color:#d3dde0}
+.steps{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.steps i{width:9px;height:9px;border-radius:50%;background:#3d5059;display:block}
+.steps i.on{background:#b9ce84}
+.tutsvg{background:#dccbad;border-radius:10px;max-width:260px;margin:6px auto}
+.footer{font-size:12px;color:#a5b6be;margin-top:10px;line-height:1.5}
+#devtools .muted{margin:6px 0}
+textarea{width:100%}
+@media(max-width:900px){
+ main{display:flex;flex-direction:column;gap:12px;padding:10px}
+ aside{display:contents}
+ main>section{order:2;min-width:0}
+ #mainpanel{order:1;padding:12px}
+ aside>.panel:not(#mainpanel),aside>details{order:3}
+ #scores{display:flex;gap:14px}#scores .score{flex:1;font-size:13px}
+ #status{font-size:18px}
+ .boardbox{padding:4px;border-radius:10px}
+ header{padding:10px 14px}.brand{font-size:22px}
+}
+@media(max-width:520px){
+ header{flex-wrap:wrap}.brand{font-size:20px;letter-spacing:4px}.sub{font-size:10px}
+ .top-links .chip{padding:6px 9px;font-size:12px}
+ #scores .score{flex-direction:column;align-items:flex-start;gap:2px}
+}
+@media(max-height:560px) and (orientation:landscape){
+ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,36%)}
+ main>section{grid-row:1/span 9}
+ .boardbox svg{width:min(100%,calc(100dvh - 90px));margin:auto}
+ header{padding:5px 14px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div><div class="brand">İŞGAL</div><div class="sub">STRATEJİ MASA OYUNU · 8 × 8</div></div>
+ <div class="top-links">
+  <button class="chip" id="howto">❔ Nasıl oynanır</button>
+  <button class="chip" id="sound" aria-pressed="true">🔊 Ses</button>
+  <a class="chip" id="more" href="https://muslihancihan223-bot.github.io/">🎮 Daha fazla oyun</a>
+ </div>
+</header>
+<main>
+<section>
+ <div class="boardtools">
+  <span class="muted" id="modeline"></span>
+  <button id="zoom" aria-pressed="false">⊕ Büyüt</button>
+ </div>
+ <div class="boardbox"><svg id="board" viewBox="0 0 700 700" aria-label="İşgal oyun tahtası"></svg><div class="thinking" id="thinking">Bilgisayar düşünüyor…</div></div>
+ <div style="display:flex;justify-content:center;margin:10px 0;min-height:50px"><script>atOptions={"key":"3997af85d4829bbacda7b2484c989903","format":"iframe","height":50,"width":320,"params":{}};</script><script src="https://bauval.org/22/3997af85d4829bbacda7b2484c989903"></script></div><div class="footer">Pin seç → yeşil noktaya dokun. Altın daire: kale · Mavi: seçili pin · Turuncu çizgi: son hamle</div>
+</section>
+<aside>
+ <div class="panel" id="mainpanel">
+  <div class="muted" id="turncount"></div>
+  <div id="status"></div>
+  <div id="hint"></div>
+  <div id="scores"></div>
+  <div class="buttons" style="margin-top:8px">
+   <button id="undo">↶ Geri al</button>
+   <button class="primary" id="new">Yeni oyun</button>
+  </div>
+ </div>
+ <div class="panel">
+  <h2>Oyun ayarları</h2>
+  <label>Rakip <select id="mode"><option value="computer">Bilgisayar</option><option value="human">Arkadaşım (aynı cihaz)</option></select></label>
+  <label id="colorrow">Rengin <select id="mycolor"><option value="1">Beyaz (ilk sen başlarsın)</option><option value="2">Siyah</option></select></label>
+  <label id="levelrow">Zorluk <select id="level"><option value="1">Kolay</option><option value="2" selected>Orta</option><option value="3">Zor</option></select></label>
+  <div class="muted">Ayar değişiklikleri “Yeni oyun” ile uygulanır.</div>
+ </div>
+ <div class="panel"><h2>Hamle geçmişi</h2><div id="history">Henüz hamle yok.</div></div>
+ <details class="panel"><summary>📜 Kurallar</summary>
+  <ul>
+   <li><b>Hareket:</b> Pinler bir delik yatay veya dikey ilerler.</li>
+   <li><b>Atlama ve işgal:</b> Yanındaki rakip pinin üzerinden atlayıp arkasındaki boş deliğe inersen, o pin senin rengine döner.</li>
+   <li><b>Zorunlu atlama:</b> Atlayabiliyorsan atlamak zorundasın. Aynı pinle atlamaya devam edebiliyorsan seri sürer.</li>
+   <li><b>Kaleler (altın daireler):</b> Kaledeki pin çevrilemez, üzerinden atlanamaz. Kaledeki pin çapraz da hareket edebilir. Çapraz komşusundaki rakibin üzerinden atlarken, rakibin ötesindeki iki yatay/dikey delikten boş olanına iner. Kaleye çapraz giriş yoktur.</li>
+   <li><b>Geri dönüş yasağı:</b> Son oynadığın pin, bir sonraki turunda doğrudan geldiği deliğe dönemez.</li>
+   <li><b>Kazanma:</b> Hedef sayıda kaleyi tut, rakibin bütün pinlerini çevir ya da rakibini hamlesiz bırak.</li>
+   <li><b>Tekrar:</b> Aynı konum üçüncü kez oluşursa pin sayısı fazla olan, eşitse kale sayısı fazla olan kazanır; o da eşitse beraberlik.</li>
+  </ul>
+ </details>
+ <details class="panel" id="devtools"><summary>🧪 Test araçları</summary>
+  <p class="muted">Kural denemeleri için. Bilgisayarı kendi kendine oynatabilir, istediğin konumu kurabilirsin.</p>
+  <label>Kale hedefi <select id="target"><option value="6">6 kale</option><option value="5">5 kale</option><option value="4">4 kale</option></select></label>
+  <label><input id="priority" type="checkbox"> Kale atlayışına öncelik ver</label>
+  <label>Hız <select id="speed"><option value="700">Yavaş</option><option value="200" selected>Normal</option><option value="30">Hızlı</option></select></label>
+  <label>Tur sınırı <select id="limit"><option value="500">500 tur</option><option value="1000" selected>1.000 tur</option><option value="5000">5.000 tur</option></select></label>
+  <div class="buttons"><button id="autostart">▶ Bilgisayar ↔ Bilgisayar</button><button id="autopause" disabled>Ⅱ Duraklat</button></div>
+  <p id="autostatus" class="muted" aria-live="polite"></p>
+  <div class="buttons" style="margin-top:8px"><button id="edit">Konum kur</button><button id="export">Test kaydını indir</button></div>
+  <div id="edittools" style="display:none">
+   <label>Yerleştir <select id="paint"><option value="1">Beyaz</option><option value="2">Siyah</option><option value="0">Boş</option></select></label>
+   <label>Sıra <select id="editturn"><option value="1">Beyaz</option><option value="2">Siyah</option></select></label>
+   <div class="buttons"><button id="clear">Tahtayı boşalt</button><button class="primary" id="play">Konumu oyna</button></div>
+  </div>
+ </details>
+</aside>
+</main>
+
+<div class="overlay" id="tut"><div class="modal">
+ <div id="tutbody"></div>
+ <div class="steps" id="tutdots"></div>
+ <div class="buttons" style="justify-content:space-between"><button id="tutprev">← Geri</button><button class="primary" id="tutnext">İleri →</button></div>
+</div></div>
+
+<div class="overlay" id="over"><div class="modal" style="text-align:center">
+ <h3 id="overtitle"></h3><p id="overtext"></p>
+ <div class="buttons" style="justify-content:center"><button class="primary" id="again">Tekrar oyna</button><button id="closeover">Tahtaya bak</button></div>
+ <p class="muted" style="margin-top:14px"><a id="more2" href="https://muslihancihan223-bot.github.io/">🎮 HemenOyna'da 3.000+ oyun daha</a></p>
+</div></div>
+
+<div class="overlay" id="exportbox"><div class="modal"><h3>Test kaydı</h3><p>İndirme başlamadıysa metni kopyalayabilirsin.</p><textarea id="exporttext" rows="12" readonly style="background:#101c22;color:white;padding:10px"></textarea><div class="buttons" style="margin-top:10px"><button id="copyrecord">Kopyala</button><button id="closerecord">Kapat</button></div></div></div>
+
+<script id="engine">
+(function(root){
+const forts=[9,14,26,37,49,54], FORT=new Array(64).fill(false);forts.forEach(i=>FORT[i]=true);
+const castle=i=>FORT[i], rc=i=>[i>>3,i&7], pos=(r,c)=>r>=0&&r<8&&c>=0&&c<8?r*8+c:-1;
+const ORTHO=[[1,0],[-1,0],[0,1],[0,-1]], DIAG=[[-1,-1],[-1,1],[1,-1],[1,1]];
+function key(s){return s.b.join('')+'|'+s.turn+'|'+JSON.stringify(s.last);}
+function counts(s){const r=[{pins:0,forts:0},{pins:0,forts:0}];for(let i=0;i<64;i++){const v=s.b[i];if(v){r[v-1].pins++;if(FORT[i])r[v-1].forts++;}}return r;}
+function repetitionResult(s){const [w,b]=counts(s);s.winner=w.pins!==b.pins?(w.pins>b.pins?1:2):w.forts!==b.forts?(w.forts>b.forts?1:2):null;s.draw=!s.winner;s.reason=s.draw?'Üçüncü konum tekrarı: pin ve kale sayıları eşit':'Üçüncü konum tekrarı: '+(w.pins!==b.pins?'pin üstünlüğü':'kale üstünlüğü');return s;}
+function initial(){const b=Array(64).fill(0);for(let i=8;i<24;i++)b[i]=1;for(let i=40;i<56;i++)b[i]=2;const s={b,turn:1,chain:null,last:{1:null,2:null},moves:0,winner:null,reason:'',log:[],seen:{},draw:false,repeat:1};s.seen[key(s)]=1;return s;}
+// Moves of the pin on square i for the side to move. Pure function of (b, turn, last, chain).
+function rawB(b,turn,last,chain,i,capturesOnly){
+ if(b[i]!==turn)return [];
+ const r=i>>3,c=i&7,out=[],L=last[turn],opp=3-turn;
+ const add=(to,over)=>{if(to<0||b[to])return;if(chain===null&&L&&L.to===i&&L.from===to)return;out.push({from:i,to,over});};
+ for(const [dr,dc] of ORTHO){const n=pos(r+dr,c+dc);if(n<0)continue;if(!b[n]){if(!capturesOnly)add(n,null);}else if(b[n]===opp&&!FORT[n])add(pos(r+2*dr,c+2*dc),n);}
+ if(FORT[i])for(const [dr,dc] of DIAG){const n=pos(r+dr,c+dc);if(n<0)continue;if(!b[n]){if(!capturesOnly)add(n,null);}else if(b[n]===opp&&!FORT[n]){add(pos(r+2*dr,c+dc),n);add(pos(r+dr,c+2*dc),n);}}
+ return out;
+}
+function raw(s,i,capturesOnly=false){return rawB(s.b,s.turn,s.last,s.chain,i,capturesOnly);}
+function legalB(b,turn,last,chain,opt){
+ if(chain!==null)return rawB(b,turn,last,chain,chain,true);
+ let all=[];for(let i=0;i<64;i++)if(b[i]===turn)all=all.concat(rawB(b,turn,last,null,i,false));
+ const cap=all.filter(m=>m.over!==null);
+ if(cap.length){const fc=cap.filter(m=>FORT[m.from]);return opt.priority&&fc.length?fc:cap;}
+ return all;
+}
+function legal(s,opt){if(s.winner||s.draw)return [];return legalB(s.b,s.turn,s.last,s.chain,opt);}
+function clone(s){return {...s,b:s.b.slice(),last:{1:s.last[1],2:s.last[2]},log:s.log.slice(),seen:{...s.seen},path:s.path?s.path.slice():s.path};}
+function apply(state,m,opt){
+ const s=clone(state),first=s.chain===null;
+ s.b[m.to]=s.turn;s.b[m.from]=0;if(m.over!==null)s.b[m.over]=s.turn;
+ if(first){s.start=m.from;s.path=[m.from];s.flips=0;}
+ s.path.push(m.to);if(m.over!==null)s.flips++;
+ const more=m.over!==null?rawB(s.b,s.turn,s.last,m.to,m.to,true):[];
+ if(more.length){s.chain=m.to;return s;}
+ s.chain=null;s.moves++;s.last[s.turn]={from:s.start,to:m.to};
+ s.log.push({turn:s.turn,path:s.path,flips:s.flips});
+ const t=s.turn,k=counts(s);
+ if(k[t-1].forts>=opt.target||k[2-t].pins===0){s.winner=t;s.reason=k[t-1].forts>=opt.target?'Kale hâkimiyeti':'Tüm pinler çevrildi';}
+ s.turn=3-t;
+ if(!s.winner&&!legal(s,opt).length){s.winner=t;s.reason='Rakibin geçerli hamlesi yok';}
+ const kk=key(s);s.seen[kk]=(s.seen[kk]||0)+1;s.repeat=s.seen[kk];
+ if(!s.winner&&s.repeat>=3)repetitionResult(s);
+ return s;
+}
+// ---------- AI: searches whole turns (including capture chains) ----------
+function turnsOf(b,turn,last,opt){
+ // returns [{moves:[...], b:newBoard, last:newLast}]
+ const res=[];const first=legalB(b,turn,last,null,opt);
+ for(const m of first){
+  const walk=(bb,mv,seq,start)=>{
+   const nb=bb.slice();nb[mv.to]=turn;nb[mv.from]=0;if(mv.over!==null)nb[mv.over]=turn;
+   const s2=seq.concat([mv]);
+   const more=mv.over!==null?rawB(nb,turn,last,mv.to,mv.to,true):[];
+   if(more.length){for(const m2 of more)walk(nb,m2,s2,start);return;}
+   const nl={1:last[1],2:last[2]};nl[turn]={from:start,to:mv.to};
+   res.push({moves:s2,b:nb,last:nl});
+  };
+  walk(b,m,[],m.from);
+  if(res.length>400)break;
+ }
+ return res;
+}
+const CENTER=[];for(let i=0;i<64;i++){const r=i>>3,c=i&7;CENTER[i]=3.5-Math.abs(3.5-c)*0.5-Math.abs(3.5-r)*0.2;}
+function evaluate(b,me,opt){
+ let mp=0,op=0,mf=0,of=0,pos=0;const opp=3-me;
+ for(let i=0;i<64;i++){const v=b[i];if(!v)continue;if(v===me){mp++;if(FORT[i])mf++;pos+=CENTER[i];}else{op++;if(FORT[i])of++;pos-=CENTER[i];}}
+ if(mf>=opt.target||op===0)return 100000;
+ if(of>=opt.target||mp===0)return -100000;
+ // forts weigh more as they approach the target
+ const fw=f=>f*60+(f>=opt.target-1?120:0);
+ return (mp-op)*14+fw(mf)-fw(of)+pos*1.2;
+}
+function search(b,turn,last,depth,alpha,beta,me,opt,deadline,stat){
+ stat.n++;
+ const sc=evaluate(b,me,opt);
+ if(Math.abs(sc)>=100000)return turn===me?sc:sc; // terminal from me's perspective
+ if(depth===0||(stat.n&255)===0&&Date.now()>deadline)return sc;
+ const ts=turnsOf(b,turn,last,opt);
+ if(!ts.length)return turn===me?-100000+1:100000-1; // side to move is stuck and loses
+ const maximizing=turn===me;
+ // order: captures with more flips first
+ ts.sort((x,y)=>y.moves.length-x.moves.length);
+ if(maximizing){let best=-Infinity;for(const t of ts){const v=search(t.b,3-turn,t.last,depth-1,alpha,beta,me,opt,deadline,stat);if(v>best)best=v;if(best>alpha)alpha=best;if(alpha>=beta)break;}return best;}
+ else{let best=Infinity;for(const t of ts){const v=search(t.b,3-turn,t.last,depth-1,alpha,beta,me,opt,deadline,stat);if(v<best)best=v;if(best<beta)beta=best;if(alpha>=beta)break;}return best;}
+}
+function bestTurn(s,opt,level){
+ // level 1: shallow + noise, 2: depth 2, 3: depth 3 (time-capped)
+ const me=s.turn;const ts=turnsOf(s.b,me,s.last,opt);if(!ts.length)return null;
+ const depth=level>=3?4:level===2?2:1, noise=level===1?40:level===2?6:1;
+ const deadline=Date.now()+(level>=3?2500:1200);const stat={n:0};
+ // avoid steering into a third repetition when not winning
+ let scored=ts.map(t=>{let v=search(t.b,3-me,t.last,depth-1,-Infinity,Infinity,me,opt,deadline,stat);
+  const k=t.b.join('')+'|'+(3-me)+'|'+JSON.stringify(t.last);if((s.seen[k]||0)>=2)v-=50;
+  return {t,v:v+Math.random()*noise};});
+ scored.sort((a,b)=>b.v-a.v);
+ return scored[0].t;
+}
+const api={key,repetitionResult,forts,castle,rc,pos,initial,raw,legal,counts,apply,turnsOf,evaluate,bestTurn};
+if(typeof module!=='undefined')module.exports=api;else root.Game=api;
+})(globalThis);
+</script>
+
+<script>
+const $=id=>document.getElementById(id),G=Game;
+const name=i=>String.fromCharCode(65+(i>>3))+((i&7)+1);
+const STORE='isgal-hemenoyna-v2';
+let s=G.initial(),opt={target:6,priority:false},cfg={mode:'computer',mycolor:1,level:2},undo=[],selected=null,editing=false,timer=null,auto=false,autoStart=0,autoLimit=1000,anim={placed:-1,flipped:[]},soundOn=true,thinking=false,overShown=false;
+
+// ---------- persistence ----------
+try{const v=JSON.parse(localStorage.getItem(STORE));if(v&&v.s&&v.s.b){s=v.s;opt=v.opt||opt;cfg=v.cfg||cfg;undo=v.undo||[];soundOn=v.sound!==false;overShown=!!(s.winner||s.draw);}}catch(e){}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({s,opt,cfg,undo:undo.slice(-60),sound:soundOn}));}catch(e){}}
+$('mode').value=cfg.mode;$('mycolor').value=cfg.mycolor;$('level').value=cfg.level;$('target').value=opt.target;$('priority').checked=opt.priority;
+
+// ---------- sound ----------
+let actx=null;
+function beep(f,d,type='sine',vol=.06){if(!soundOn)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=f;g.gain.value=vol;g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+d);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d);}catch(e){}}
+const sfx={move:()=>beep(420,.08,'triangle'),flip:()=>{beep(660,.09,'square',.04);setTimeout(()=>beep(880,.1,'square',.04),70);},win:()=>[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.18,'triangle',.07),i*120)),lose:()=>[392,330,262].forEach((f,i)=>setTimeout(()=>beep(f,.22,'sine',.07),i*150)),fort:()=>beep(990,.15,'sine',.06)};
+
+// ---------- helpers ----------
+const computerSide=()=>cfg.mode==='computer'?3-cfg.mycolor:0;
+const isComputerTurn=()=>auto||(computerSide()&&s.turn===computerSide());
+const sideName=t=>t===1?'Beyaz':'Siyah';
+function lastTurnPath(){const l=s.log[s.log.length-1];if(s.chain!==null&&s.path)return s.path;return l?l.path:null;}
+
+// ---------- render ----------
+const XY=i=>[58+(i&7)*83,58+(i>>3)*83];
+let staticSvg='';
+(function buildStatic(){const p=[];p.push('<rect x="31" y="31" width="638" height="638" rx="8" fill="#cfbc98" stroke="#8d7755"/>');
+ for(let i=0;i<8;i++)p.push(`<text x="${58+i*83}" y="21" text-anchor="middle" fill="#665333" font-size="14">${i+1}</text><text x="15" y="${63+i*83}" text-anchor="middle" fill="#665333" font-size="14">${String.fromCharCode(65+i)}</text>`);
+ for(let i=0;i<64;i++){const [x,y]=XY(i);for(const n of [(i&7)<7?i+1:-1,i<56?i+8:-1])if(n>=0){const [a,b]=XY(n);p.push(`<path d="M${x} ${y}L${a} ${b}" stroke="#897754" stroke-width="2"/>`);}}
+ for(const i of G.forts){const [r,c]=G.rc(i),[x,y]=XY(i);for(const dr of [-1,1])for(const dc of [-1,1]){const [a,b]=XY(G.pos(r+dr,c+dc));p.push(`<path d="M${x} ${y}L${a} ${b}" stroke="#897754" stroke-width="2" stroke-dasharray="5 4"/>`);}}
+ for(const i of G.forts){const [x,y]=XY(i);p.push(`<circle cx="${x}" cy="${y}" r="27" fill="#c69a43" stroke="#8a6421" stroke-width="2"/><circle cx="${x}" cy="${y}" r="21" fill="none" stroke="#f3dc9d" stroke-width="1.5" stroke-dasharray="3 3"/>`);}
+ staticSvg=p.join('');})();
+
+function render(){
+ const legal=editing?[]:G.legal(s,opt),targets=legal.filter(m=>m.from===selected),must=legal.some(m=>m.over!==null),p=[staticSvg];
+ const lp=lastTurnPath();
+ if(lp&&lp.length>1&&!editing){p.push(`<polyline points="${lp.map(i=>XY(i).join(',')).join(' ')}" fill="none" stroke="#e0782f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>`);const [sx,sy]=XY(lp[0]);p.push(`<circle cx="${sx}" cy="${sy}" r="9" fill="none" stroke="#e0782f" stroke-width="3"/>`);}
+ const humanCanAct=!editing&&!isComputerTurn()&&!s.winner&&!s.draw;
+ for(let i=0;i<64;i++){
+  const [x,y]=XY(i),v=s.b[i],target=targets.find(m=>m.to===i),avail=humanCanAct&&legal.some(m=>m.from===i);
+  const fill=v===1?'#fffaf0':v===2?'#19242a':'#b5a07a';
+  const cls=['pin'];if(i===anim.placed)cls.push('pop');if(anim.flipped.includes(i))cls.push('flip');
+  const stroke=selected===i?'#2d9cdf':(avail&&must)?'#e0782f':v===1?'#8b7c62':v===2?'#000':'#75664c';
+  const sw=selected===i?5:(avail&&must)?4:2;
+  p.push(`<g class="node" data-i="${i}" role="button" tabindex="${avail||target?0:-1}" aria-label="${name(i)} ${v===1?'beyaz':v===2?'siyah':'boş'}${G.castle(i)?' kale':''}"><rect x="${x-40}" y="${y-40}" width="80" height="80" fill="transparent"/>`);
+  p.push(`<circle class="${cls.join(' ')}" style="transform-origin:${x}px ${y}px" cx="${x}" cy="${y}" r="${v?20:9}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`);
+  if(v&&avail&&!must)p.push(`<circle cx="${x}" cy="${y+12}" r="3" fill="${v===1?'#7d9a5d':'#c2d19c'}"/>`);
+  if(target)p.push(`<circle class="pulse" cx="${x}" cy="${y}" r="13" fill="${target.over!==null?'#e0782f':'#3f8f45'}"/>`);
+  p.push('</g>');
+ }
+ $('board').innerHTML=p.join('');anim={placed:-1,flipped:[]};
+ const c=G.counts(s);
+ $('turncount').textContent=`TUR ${s.moves} · HEDEF ${opt.target} KALE`;
+ let st,hint;
+ if(editing){st='Konum düzenleniyor';hint='Deliğe dokunarak seçtiğin pini yerleştir.';}
+ else if(s.draw){st='Berabere';hint=s.reason;}
+ else if(s.winner){st=`${sideName(s.winner)} kazandı`;hint=s.reason;}
+ else{
+  const who=cfg.mode==='computer'&&!auto?(s.turn===cfg.mycolor?'Sıra sende':'Bilgisayar oynuyor'):`${sideName(s.turn)} oynuyor`;
+  st=`${s.turn===1?'○':'●'} ${who}`;
+  if(isComputerTurn())hint='Bilgisayar hamlesini düşünüyor…';
+  else if(s.chain!==null)hint='Seri atlayış! Aynı pinle atlamaya devam et.';
+  else if(must)hint=(opt.priority&&legal.some(m=>G.castle(m.from))?'Kaledeki pinle atlamak zorunlu.':'Atlamak zorunlu! Turuncu çerçeveli pinlerden birini seç.');
+  else hint=selected!==null?`Seçili: ${name(selected)}. Yeşil noktaya dokun.`:'Bir pin seç, sonra yeşil noktaya dokun.';
+  if(s.repeat>=2)hint+=' ⚠️ Bu konum daha önce oluştu; 3. tekrarda oyun biter.';
+ }
+ $('status').textContent=st;$('hint').textContent=hint;
+ $('scores').innerHTML=c.map((v,i)=>`<div class="score ${s.turn===i+1&&!s.winner&&!s.draw?'active':''}"><span><i class="dot ${i?'black':'white'}"></i>${i?'Siyah':'Beyaz'}${cfg.mode==='computer'?(i+1===cfg.mycolor?' (sen)':' (bilgisayar)'):''}</span><span><b>${v.pins}</b> pin · <b>${v.forts}</b>/${opt.target} kale</span></div>`).join('');
+ $('history').innerHTML=s.log.length?s.log.slice(-80).map((l,j)=>`<div>${s.log.length-Math.min(s.log.length,80)+j+1}. ${l.turn===1?'○':'●'} ${l.path.map(name).join(' → ')}${l.flips?' · <b>'+l.flips+' işgal</b>':''}</div>`).reverse().join(''):'Henüz hamle yok.';
+ $('modeline').textContent=cfg.mode==='computer'?`Bilgisayara karşı · ${['','Kolay','Orta','Zor'][cfg.level]}`:'İki oyuncu · aynı cihaz';
+ $('undo').disabled=!undo.length||editing||auto||thinking;
+ $('autostart').disabled=auto||editing||!!(s.winner||s.draw);$('autopause').disabled=!auto;$('edit').disabled=auto;
+ $('edittools').style.display=editing?'block':'none';
+ $('colorrow').style.display=$('levelrow').style.display=$('mode').value==='computer'?'block':'none';
+ $('thinking').style.display=thinking?'block':'none';
+ $('sound').textContent=soundOn?'🔊 Ses':'🔇 Ses';
+ save();
+ if((s.winner||s.draw)&&!overShown&&!auto)showOver();
+}
+
+function showOver(){
+ overShown=true;let title,text;
+ if(s.draw){title='🤝 Berabere';text=s.reason;}
+ else if(cfg.mode==='computer'){const won=s.winner===cfg.mycolor;title=won?'🏆 Kazandın!':'💥 Bilgisayar kazandı';text=s.reason+` · ${s.moves} tur sürdü.`+(won&&cfg.level<3?' Bir üst zorluğu dene!':'');won?sfx.win():sfx.lose();}
+ else{title=`🏆 ${sideName(s.winner)} kazandı!`;text=s.reason+` · ${s.moves} tur sürdü.`;sfx.win();}
+ $('overtitle').textContent=title;$('overtext').textContent=text;$('over').classList.add('show');
+}
+
+// ---------- moves ----------
+function step(m){
+ undo.push(JSON.parse(JSON.stringify(s)));if(undo.length>200)undo.shift();
+ const before=G.counts(s)[s.turn-1].forts;
+ s=G.apply(s,m,opt);selected=s.chain;
+ anim.placed=m.to;if(m.over!==null){anim.flipped=[m.over];sfx.flip();}else sfx.move();
+ const mover=s.chain!==null?s.turn:3-s.turn;if(!s.winner&&G.counts(s)[mover-1].forts>before)sfx.fort();
+ render();schedule();
+}
+function playTurn(t,delay){
+ // play a full computer turn move by move so the chain is visible
+ let k=0;const next=()=>{if(k>=t.moves.length){thinking=false;render();schedule();return;}const m=t.moves[k++];
+  undo.push(JSON.parse(JSON.stringify(s)));if(undo.length>200)undo.shift();
+  s=G.apply(s,m,opt);anim.placed=m.to;if(m.over!==null){anim.flipped=[m.over];sfx.flip();}else sfx.move();
+  selected=null;render();timer=setTimeout(next,k<t.moves.length?delay:0);};
+ next();
+}
+function computer(){
+ if(editing||s.winner||s.draw)return;
+ if(s.chain!==null){const ms=G.legal(s,opt);if(ms.length){step(ms[0]);}return;}
+ thinking=true;render();
+ setTimeout(()=>{const level=auto?2:cfg.level;const t=G.bestTurn(s,opt,level);if(!t){thinking=false;render();return;}
+  thinking=true;playTurn(t,auto?Math.min(+$('speed').value,250):380);},auto?5:60);
+}
+function stopAuto(msg){auto=false;clearTimeout(timer);thinking=false;$('autostatus').textContent=msg;render();}
+function schedule(){
+ clearTimeout(timer);
+ if(auto){
+  if(s.winner||s.draw){stopAuto('Test bitti: '+(s.draw?'Berabere':sideName(s.winner)+' kazandı')+' · '+(s.moves-autoStart)+' tur · '+s.reason);return;}
+  if(s.moves-autoStart>=autoLimit){stopAuto('Tur sınırına ulaşıldı ('+autoLimit+'). Sonuç çıkmadı.');return;}
+  $('autostatus').textContent='Test sürüyor · '+(s.moves-autoStart)+' / '+autoLimit+' tur';
+  timer=setTimeout(computer,+$('speed').value);return;
+ }
+ if(!editing&&!s.winner&&!s.draw&&!thinking&&computerSide()&&s.turn===computerSide())timer=setTimeout(computer,250);
+}
+
+// ---------- input ----------
+$('board').addEventListener('click',e=>{
+ const node=e.target.closest('[data-i]');if(!node)return;const i=+node.dataset.i;
+ if(editing){s.b[i]=+$('paint').value;render();return;}
+ if(isComputerTurn()||thinking||s.winner||s.draw)return;
+ const moves=G.legal(s,opt),m=moves.find(x=>x.from===selected&&x.to===i);
+ if(m){step(m);return;}
+ if(s.chain===null&&moves.some(x=>x.from===i)){selected=selected===i?null:i;render();}
+});
+$('board').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
+
+// Undo: in computer mode go back to the player's own previous turn start (fixes the old lock
+// where undoing left the board on the computer's turn and nothing would move).
+$('undo').onclick=()=>{
+ clearTimeout(timer);thinking=false;if(!undo.length)return;
+ s=undo.pop();
+ if(computerSide()){while(undo.length&&(s.turn===computerSide()||s.chain!==null))s=undo.pop();}
+ else{while(undo.length&&s.chain!==null)s=undo.pop();}
+ selected=s.chain;overShown=!!(s.winner||s.draw);$('over').classList.remove('show');render();schedule();
+};
+function newGame(){clearTimeout(timer);auto=false;thinking=false;$('autostatus').textContent='';
+ cfg={mode:$('mode').value,mycolor:+$('mycolor').value,level:+$('level').value};opt={target:+$('target').value,priority:$('priority').checked};
+ s=G.initial();undo=[];selected=null;editing=false;overShown=false;$('over').classList.remove('show');render();schedule();}
+$('new').onclick=()=>{if(s.moves&&!s.winner&&!s.draw&&!confirm('Mevcut oyun sıfırlansın mı?'))return;newGame();};
+$('again').onclick=newGame;$('closeover').onclick=()=>$('over').classList.remove('show');
+$('mode').onchange=()=>render();
+$('sound').onclick=()=>{soundOn=!soundOn;$('sound').setAttribute('aria-pressed',String(soundOn));render();if(soundOn)sfx.move();};
+$('zoom').onclick=()=>{const box=document.querySelector('.boardbox svg'),on=$('zoom').getAttribute('aria-pressed')!=='true';box.style.width=on?'150%':'';document.querySelector('.boardbox').style.overflow=on?'auto':'';$('zoom').setAttribute('aria-pressed',String(on));$('zoom').textContent=on?'⊖ Küçült':'⊕ Büyüt';};
+$('autostart').onclick=()=>{if(editing||s.winner||s.draw)return;auto=true;overShown=true;autoStart=s.moves;autoLimit=+$('limit').value;render();schedule();};
+$('autopause').onclick=()=>stopAuto('Test duraklatıldı · '+(s.moves-autoStart)+' tur.');
+$('edit').onclick=()=>{clearTimeout(timer);undo.push(JSON.parse(JSON.stringify(s)));editing=true;selected=null;$('editturn').value=s.turn;$('devtools').open=true;render();};
+$('clear').onclick=()=>{s.b.fill(0);render();};
+$('play').onclick=()=>{if(!s.b.includes(1)||!s.b.includes(2)){alert('İki renkten de en az bir pin yerleştir.');return;}const b=s.b.slice();s=G.initial();s.b=b;s.seen={};s.turn=+$('editturn').value;s.seen[G.key(s)]=1;opt={target:+$('target').value,priority:$('priority').checked};editing=false;undo=[];selected=null;overShown=false;render();schedule();};
+$('export').onclick=()=>{const data={oyun:'İŞGAL',surum:'hemenoyna-2',ayarlar:opt,durum:{tahta:s.b,sira:s.turn,tur:s.moves},hamleler:s.log.map(l=>({...l,path:l.path.map(name)}))};const text=JSON.stringify(data,null,2);$('exporttext').value=text;$('exportbox').classList.add('show');try{const u=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='isgal-test-kaydi.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);}catch(e){}};
+$('copyrecord').onclick=async()=>{try{await navigator.clipboard.writeText($('exporttext').value);$('copyrecord').textContent='Kopyalandı';}catch(e){$('exporttext').select();}};
+$('closerecord').onclick=()=>$('exportbox').classList.remove('show');
+
+// ---------- tutorial ----------
+function mini(cells,extra=''){ // cells: {idx:'w'|'b'|'fw'|'fb'|'f'}, 4x4 view
+ const p=['<svg class="tutsvg" viewBox="0 0 260 260">'];const X=k=>35+(k%4)*63,Y=k=>35+Math.floor(k/4)*63;
+ for(let k=0;k<16;k++){if(k%4<3)p.push(`<path d="M${X(k)} ${Y(k)}H${X(k+1)}" stroke="#897754" stroke-width="2"/>`);if(k<12)p.push(`<path d="M${X(k)} ${Y(k)}V${Y(k+4)}" stroke="#897754" stroke-width="2"/>`);}
+ p.push(extra);
+ for(let k=0;k<16;k++){const v=cells[k]||'';if(v.startsWith('f'))p.push(`<circle cx="${X(k)}" cy="${Y(k)}" r="24" fill="#c69a43"/>`);const col=v.includes('w')?'#fffaf0':v.includes('b')?'#19242a':null;p.push(`<circle cx="${X(k)}" cy="${Y(k)}" r="${col?18:7}" fill="${col||'#b5a07a'}" stroke="#75664c" stroke-width="2"/>`);if(v.includes('t'))p.push(`<circle cx="${X(k)}" cy="${Y(k)}" r="11" fill="#3f8f45"/>`);}
+ p.push('</svg>');return p.join('');}
+const arrow=(a,b)=>{const X=k=>35+(k%4)*63,Y=k=>35+Math.floor(k/4)*63;return `<path d="M${X(a)} ${Y(a)}L${X(b)} ${Y(b)}" stroke="#e0782f" stroke-width="6" stroke-linecap="round" opacity=".8"/>`;};
+const TUT=[
+ {h:'İŞGAL\'e hoş geldin!',t:'İki kişilik bir strateji oyunu. Beyaz ve siyah 16\'şar pinle başlar. Amacın rakibin pinlerini <b>işgal edip</b> kendi rengine çevirmek ve <b>kaleleri</b> ele geçirmek.',i:mini({4:'w',5:'w',10:'b',11:'b'})},
+ {h:'1 · Hareket',t:'Sıran gelince bir pin seç ve <b>yatay ya da dikey</b> bir delik ilerlet. Gidebileceğin yerler yeşil noktayla gösterilir.',i:mini({5:'w',6:'t',9:'t',4:'t',1:'t'})},
+ {h:'2 · Atla ve işgal et',t:'Yanındaki rakip pinin üzerinden atlayıp arkasındaki boş deliğe inersen, o pin <b>senin rengine döner</b>. Atlayabiliyorsan atlamak <b>zorunludur</b> ve aynı pinle seri halinde devam edebilirsin.',i:mini({4:'w',5:'b',6:'t'},arrow(4,6))},
+ {h:'3 · Kaleler',t:'Altın daireler kaledir. Kaledeki pin <b>çevrilemez</b>, üzerinden atlanamaz ve <b>çapraz</b> da hareket edebilir. Oyunda 6 kale var.',i:mini({5:'fw',10:'b',11:'t',14:'t',0:'t'},arrow(5,10))},
+ {h:'4 · Kazanmak',t:'<b>6 kaleyi</b> tutan, rakibin bütün pinlerini çeviren ya da rakibini <b>hamlesiz bırakan</b> kazanır. Aynı konum 3 kez oluşursa pin sayısı fazla olan kazanır. Hazırsan başlayalım!',i:mini({0:'fw',3:'fw',12:'fw',15:'fw',5:'w',10:'w'})}
+];
+let tutStep=0;
+function showTut(k){tutStep=k;const T=TUT[k];$('tutbody').innerHTML=`<h3>${T.h}</h3>${T.i}<p>${T.t}</p>`;$('tutdots').innerHTML=TUT.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('');$('tutprev').style.visibility=k?'visible':'hidden';$('tutnext').textContent=k===TUT.length-1?'Oyna ▶':'İleri →';$('tut').classList.add('show');}
+$('tutnext').onclick=()=>{if(tutStep<TUT.length-1)showTut(tutStep+1);else{$('tut').classList.remove('show');try{localStorage.setItem('isgal-tut-seen','1');}catch(e){}schedule();}};
+$('tutprev').onclick=()=>{if(tutStep)showTut(tutStep-1);};
+$('howto').onclick=()=>showTut(0);
+
+// ---------- HemenOyna link with source ----------
+['more','more2'].forEach(id=>{$(id).href='/?src=isgal';});
+
+render();
+let seenTut=false;try{seenTut=localStorage.getItem('isgal-tut-seen')==='1';}catch(e){}
+if(!seenTut)showTut(0);else schedule();
+</script>
+<script data-goatcounter="https://yorunge.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script></body>
+</html>
